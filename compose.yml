@@ -1,60 +1,63 @@
 ---
 services:
   db:
-    image: shaikmustafa/arshad:db
+    build: ./database/
     deploy:
       replicas: 1
     ports:
       - "3306:3306"
     networks:
-      - mynetwork
+      - mynetwork2
 
   auth_service:
-    image: shaikmustafa/arshad:auth
+    build: ./auth/
     deploy:
       replicas: 1
     ports:
       - "5001:5001"
     networks:
-      - mynetwork
+      - mynetwork2
     depends_on:
       - db
     
 
   book_service:
-    image: shaikmustafa/arshad:book
+    build: ./book/
     deploy:
       replicas: 1
     ports:
       - "5002:5002"
     networks:
-      - mynetwork
+      - mynetwork2
     depends_on:
       - db
+      
   borrow_service:
-    image: shaikmustafa/arshad:borrow
+    build: ./borrow/
     deploy:
       replicas: 1
     ports:
       - "5003:5003"
     networks:
-      - mynetwork
+      - mynetwork2
     depends_on:
       - db
 
   frontend:
-    image: shaikmustafa/arshad:frontend
+    build: ./
     deploy:
-      replicas: 1
+      replicas: 2
     ports:
       - "5000:5000"
     networks:
-      - mynetwork
+      - mynetwork1
     depends_on:
       - auth_service
       - book_service
       - borrow_service
 
 networks:
-  mynetwork:
-    driver: bridge
+  mynetwork1:
+    driver: overlay
+  mynetwork2:
+    driver: overlay
